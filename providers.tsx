@@ -1,17 +1,17 @@
 'use client';
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { WagmiProvider, createConfig, http } from 'wagmi';
+import { WagmiProvider } from 'wagmi';
 import { mainnet, sepolia } from 'wagmi/chains';
 import { RainbowKitProvider, getDefaultConfig } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 
-const config = createConfig({
+// تنظیمات استاندارد RainbowKit و Wagmi با هم
+const config = getDefaultConfig({
+  appName: 'Web3 Mint App',
+  projectId: 'YOUR_PROJECT_ID_OR_ANY_STRING', // برای تست فعلاً همین متن بماند
   chains: [mainnet, sepolia],
-  transports: {
-    [mainnet.id]: http(),
-    [sepolia.id]: http(),
-  },
+  ssr: true, // چون از نکست‌جی‌اس استفاده می‌کنی
 });
 
 const queryClient = new QueryClient();
