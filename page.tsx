@@ -1,19 +1,44 @@
 'use client';
 import { useState } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useWriteContract } from 'wagmi';
+
+// آدرس قرارداد هوشمند تست روی شبکه سپولیا
+const CONTRACT_ADDRESS = '0x1234567890abcdef1234567890abcdef12345678';
+
+// ساختار ساده ABI برای معرفی تابع mint به برنامه
+const CONTRACT_ABI = [
+  {
+    name: 'mint',
+    type: 'function',
+    stateMutability: 'payable',
+    inputs: [{ name: 'quantity', type: 'uint256' }],
+    outputs: [],
+  },
+];
 
 export default function Home() {
-  // تعریف یک وضعیت (State) برای نگه داشتن تعداد NFTها
   const [mintAmount, setMintAmount] = useState(1);
+  
+  // استفاده از ابزار واگمی برای ارسال تراکنش به متامسک
+  const { writeContract, isPending, isSuccess, error } = useWriteContract();
 
-  // تابع افزایش تعداد
   const incrementAmount = () => {
     if (mintAmount < 10) setMintAmount(mintAmount + 1);
   };
 
-  // تابع کاهش تعداد
   const decrementAmount = () => {
     if (mintAmount > 1) setMintAmount(mintAmount - 1);
+  };
+
+  // تابع اصلی فرستادن تراکنش به متامسک
+  const handleMint = () => {
+    writeContract({
+      address: CONTRACT_ADDRESS,
+      abi: CONTRACT_ABI,
+      functionName: 'mint',
+      args: [BigInt(mintAmount)], // تبدیل تعداد به فرمت عددی بلاک‌چین
+    });
   };
 
   return (
@@ -31,10 +56,8 @@ export default function Home() {
       <h1 style={{ margin: 0 }}>برنامه مینت وب ۳</h1>
       <p style={{ margin: 0, color: '#666' }}>ابتدا کیف پول خود را وصل کرده و سپس تعداد را مشخص کنید</p>
       
-      {/* دکمه اتصال کیف پول رینبوکیت */}
       <ConnectButton />
       
-      {/* باکس فرم مینت */}
       <div style={{
         border: '1px solid #ccc',
         borderRadius: '12px',
@@ -49,7 +72,6 @@ export default function Home() {
       }}>
         <h3 style={{ margin: 0 }}>تعداد برای مینت:</h3>
         
-        {/* دکمه‌های کم و زیاد کردن تعداد */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <button 
             onClick={decrementAmount} 
@@ -64,23 +86,28 @@ export default function Home() {
           >+</button>
         </div>
 
-        {/* دکمه اصلی عملیات مینت */}
-        <button style={{
-          width: '100%',
-          padding: '12px',
-          backgroundColor: '#3b82f6',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '8px',
-          fontSize: '16px',
-          fontWeight: 'bold',
-          cursor: 'pointer',
-          transition: 'background-color 0.2s'
-        }}
-        onClick={() => alert(`درخواست مینت برای ${mintAmount} NFT ثبت شد!`)}
+        {/* دکمه اصلی مینت با مدیریت وضعیت در حال ارسال */}
+        <button 
+          onClick={handleMint}
+          disabled={isPending}
+          style={{
+            width: '100%',
+            padding: '12px',
+            backgroundColor: isPending ? '#94a3b8' : '#3b82f6',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            cursor: isPending ? 'not-allowed' : 'pointer',
+          }}
         >
-          Mint NFT
+          {isPending ? 'در حال ارسال به متامسک...' : 'Mint NFT'}
         </button>
+
+        {/* نمایش وضعیت تراکنش به کاربر */}
+        {isSuccess && <p style={{ color: 'green', margin: 0 }}>تراکنش با موفقیت به شبکه ارسال شد!</p>}
+        {error && <p style={{ color: 'red', margin: 0, fontSize: '12px' }}>خطا: کیف پول وصل نیست یا تراکنش لغو شد.</p>}
       </div>
     </main>
   );
