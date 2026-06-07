@@ -1,12 +1,12 @@
 'use client';
 import { useState } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useWriteContract } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 
 // آدرس قرارداد هوشمند تست روی شبکه سپولیا
 const CONTRACT_ADDRESS = '0x1234567890abcdef1234567890abcdef12345678';
 
-// ساختار ساده ABI برای معرفی تابع mint به برنامه
+// ساختار ساده ABI برای معرفی تابع mint
 const CONTRACT_ABI = [
   {
     name: 'mint',
@@ -20,8 +20,13 @@ const CONTRACT_ABI = [
 export default function Home() {
   const [mintAmount, setMintAmount] = useState(1);
   
-  // استفاده از ابزار واگمی برای ارسال تراکنش به متامسک
-  const { writeContract, isPending, isSuccess, error } = useWriteContract();
+  // ۱. ارسال تراکنش به متامسک و گرفتن هش تراکنش (data)
+  const { data: hash, writeContract, isPending, error } = useWriteContract();
+
+  // ۲. انتظار برای تایید نهایی تراکنش روی شبکه بلاک‌چین
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash,
+  });
 
   const incrementAmount = () => {
     if (mintAmount < 10) setMintAmount(mintAmount + 1);
@@ -31,13 +36,12 @@ export default function Home() {
     if (mintAmount > 1) setMintAmount(mintAmount - 1);
   };
 
-  // تابع اصلی فرستادن تراکنش به متامسک
   const handleMint = () => {
     writeContract({
       address: CONTRACT_ADDRESS,
       abi: CONTRACT_ABI,
       functionName: 'mint',
-      args: [BigInt(mintAmount)], // تبدیل تعداد به فرمت عددی بلاک‌چین
+      args: [BigInt(mintAmount)],
     });
   };
 
@@ -68,7 +72,7 @@ export default function Home() {
         flexDirection: 'column',
         alignItems: 'center',
         gap: '20px',
-        width: '300px'
+        width: '320px'
       }}>
         <h3 style={{ margin: 0 }}>تعداد برای مینت:</h3>
         
@@ -86,28 +90,44 @@ export default function Home() {
           >+</button>
         </div>
 
-        {/* دکمه اصلی مینت با مدیریت وضعیت در حال ارسال */}
+        {/* دکمه اصلی با مدیریت وضعیت‌های مختلف شبکه */}
         <button 
           onClick={handleMint}
-          disabled={isPending}
+          disabled={isPending || isConfirming}
           style={{
             width: '100%',
             padding: '12px',
-            backgroundColor: isPending ? '#94a3b8' : '#3b82f6',
+            backgroundColor: (isPending || isConfirming) ? '#94a3b8' : '#3b82f6',
             color: '#fff',
             border: 'none',
             borderRadius: '8px',
             fontSize: '16px',
             fontWeight: 'bold',
-            cursor: isPending ? 'not-allowed' : 'pointer',
+            cursor: (isPending || isConfirming) ? 'not-allowed' : 'pointer',
           }}
         >
-          {isPending ? 'در حال ارسال به متامسک...' : 'Mint NFT'}
+          {isPending && 'در حال تایید در کیف پول...'}
+          {isConfirming && 'در حال ثبت در بلاک‌چین...'}
+          {!isPending && !isConfirming && 'Mint NFT'}
         </button>
 
-        {/* نمایش وضعیت تراکنش به کاربر */}
-        {isSuccess && <p style={{ color: 'green', margin: 0 }}>تراکنش با موفقیت به شبکه ارسال شد!</p>}
-        {error && <p style={{ color: 'red', margin: 0, fontSize: '12px' }}>خطا: کیف پول وصل نیست یا تراکنش لغو شد.</p>}
+        {/* بخش نمایش پیام‌ها و لینک اتر‌اسکن */}
+        <div style={{ width: '100%', textAlign: 'center', fontSize: '14px' }}>
+          {hash && (
+            <p style={{ margin: '5px 0', color: '#2563eb' }}>
+              <a 
+                href={`https://etherscan.io{hash}`} 
+                target="_blank" 
+                rel="noreferrer"
+                style={{ textDecoration: 'underline', color: 'inherit' }}
+              >
+                مشاهده تراکنش در Etherscan ↗
+              </a>
+            </p>
+          )}
+          {isConfirmed && <p style={{ color: 'green', fontWeight: 'bold', margin: '5px 0' }}>✓ مینت با موفقیت انجام شد!</p>}
+          {error && <p style={{ color: 'red', margin: '5px 0', fontSize: '12px' }}>خطا: عملیات لغو شد یا موجودی کافی نیست.</p>}
+        </div>
       </div>
     </main>
   );
