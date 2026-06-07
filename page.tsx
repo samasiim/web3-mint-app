@@ -1,32 +1,15 @@
 'use client';
 import { useState } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-
-// آدرس قرارداد هوشمند تست روی شبکه سپولیا
-const CONTRACT_ADDRESS = '0x1234567890abcdef1234567890abcdef12345678';
-
-// ساختار ساده ABI برای معرفی تابع mint
-const CONTRACT_ABI = [
-  {
-    name: 'mint',
-    type: 'function',
-    stateMutability: 'payable',
-    inputs: [{ name: 'quantity', type: 'uint256' }],
-    outputs: [],
-  },
-];
 
 export default function Home() {
   const [mintAmount, setMintAmount] = useState(1);
   
-  // ۱. ارسال تراکنش به متامسک و گرفتن هش تراکنش (data)
-  const { data: hash, writeContract, isPending, error } = useWriteContract();
-
-  // ۲. انتظار برای تایید نهایی تراکنش روی شبکه بلاک‌چین
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
-    hash,
-  });
+  // وضعیت‌های شبیه‌سازی شده برای تست ظاهر برنامه
+  const [isPending, setIsPending] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [hash, setHash] = useState<string | null>(null);
 
   const incrementAmount = () => {
     if (mintAmount < 10) setMintAmount(mintAmount + 1);
@@ -36,13 +19,24 @@ export default function Home() {
     if (mintAmount > 1) setMintAmount(mintAmount - 1);
   };
 
-  const handleMint = () => {
-    writeContract({
-      address: CONTRACT_ADDRESS,
-      abi: CONTRACT_ABI,
-      functionName: 'mint',
-      args: [BigInt(mintAmount)],
-    });
+  // تابع شبیه‌سازی مراحل تراکنش
+  const handleMintFake = () => {
+    // ۱. ابتدا وضعیت تایید در کیف پول
+    setIsPending(true);
+    setIsConfirmed(false);
+    setHash(null);
+
+    setTimeout(() => {
+      setIsPending(false);
+      setIsConfirming(true);
+      // تولید یک هش تراکنش فرضی برای نمایش لینک اتراسکن
+      setHash('0x4e3a475143a85404bc032c525f6fa034078be1cf3ee43f2ff110d7ef5b839b23');
+    }, 2000); // بعد از ۲ ثانیه فرستاده می‌شود به شبکه
+
+    setTimeout(() => {
+      setIsConfirming(false);
+      setIsConfirmed(true);
+    }, 5000); // بعد از ۵ ثانیه تایید نهایی می‌شود
   };
 
   return (
@@ -58,7 +52,7 @@ export default function Home() {
       color: '#333'
     }}>
       <h1 style={{ margin: 0 }}>برنامه مینت وب ۳</h1>
-      <p style={{ margin: 0, color: '#666' }}>ابتدا کیف پول خود را وصل کرده و سپس تعداد را مشخص کنید</p>
+      <p style={{ margin: 0, color: '#666' }}>وضعیت دکمه و لینک تراکنش را تست کنید</p>
       
       <ConnectButton />
       
@@ -77,22 +71,13 @@ export default function Home() {
         <h3 style={{ margin: 0 }}>تعداد برای مینت:</h3>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <button 
-            onClick={decrementAmount} 
-            style={{ padding: '8px 16px', fontSize: '18px', cursor: 'pointer', borderRadius: '6px', border: '1px solid #ccc' }}
-          >-</button>
-          
+          <button onClick={decrementAmount} style={{ padding: '8px 16px', fontSize: '18px', cursor: 'pointer', borderRadius: '6px', border: '1px solid #ccc' }}>-</button>
           <span style={{ fontSize: '22px', fontWeight: 'bold' }}>{mintAmount}</span>
-          
-          <button 
-            onClick={incrementAmount} 
-            style={{ padding: '8px 16px', fontSize: '18px', cursor: 'pointer', borderRadius: '6px', border: '1px solid #ccc' }}
-          >+</button>
+          <button onClick={incrementAmount} style={{ padding: '8px 16px', fontSize: '18px', cursor: 'pointer', borderRadius: '6px', border: '1px solid #ccc' }}>+</button>
         </div>
 
-        {/* دکمه اصلی با مدیریت وضعیت‌های مختلف شبکه */}
         <button 
-          onClick={handleMint}
+          onClick={handleMintFake}
           disabled={isPending || isConfirming}
           style={{
             width: '100%',
@@ -111,22 +96,15 @@ export default function Home() {
           {!isPending && !isConfirming && 'Mint NFT'}
         </button>
 
-        {/* بخش نمایش پیام‌ها و لینک اتر‌اسکن */}
         <div style={{ width: '100%', textAlign: 'center', fontSize: '14px' }}>
           {hash && (
             <p style={{ margin: '5px 0', color: '#2563eb' }}>
-              <a 
-                href={`https://etherscan.io{hash}`} 
-                target="_blank" 
-                rel="noreferrer"
-                style={{ textDecoration: 'underline', color: 'inherit' }}
-              >
+              <a href={`https://etherscan.io{hash}`} target="_blank" rel="noreferrer" style={{ textDecoration: 'underline', color: 'inherit' }}>
                 مشاهده تراکنش در Etherscan ↗
               </a>
             </p>
           )}
           {isConfirmed && <p style={{ color: 'green', fontWeight: 'bold', margin: '5px 0' }}>✓ مینت با موفقیت انجام شد!</p>}
-          {error && <p style={{ color: 'red', margin: '5px 0', fontSize: '12px' }}>خطا: عملیات لغو شد یا موجودی کافی نیست.</p>}
         </div>
       </div>
     </main>
