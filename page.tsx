@@ -4,7 +4,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 
 // آدرس قرارداد هوشمند واقعی و زنده روی شبکه سپولیا (با حروف کاملاً کوچک)
-const CONTRACT_ADDRESS = '0xf99df193630fbc89f3f3f982ddf6158b93f25b1d';
+const CONTRACT_ADDRESS = '0xf99df193630fbc89F3f3f982ddf6158b93f25b1d';
 
 // ساختار دقیق ABI برای معرفی تابع mint
 const CONTRACT_ABI = [
@@ -103,10 +103,8 @@ export default function Home() {
           {!isPending && !isConfirming && 'Mint NFT'}
         </button>
 
-        {/* بخش نمایش پیام‌ها و لینک اتر‌اسکن ارتقا یافته */}
         <div style={{ width: '100%', textAlign: 'center', fontSize: '14px', marginTop: '10px' }}>
           
-          {/* نمایش لینک اتراسکن به محض تولید هش تراکنش */}
           {hash && (
             <div style={{ margin: '10px 0', padding: '8px', backgroundColor: '#eff6ff', borderRadius: '6px' }}>
               <p style={{ margin: 0, color: '#1e40af', fontWeight: 'bold' }}>تراکنش ثبت شد!</p>
@@ -121,14 +119,11 @@ export default function Home() {
             </div>
           )}
 
-          {/* وضعیت در حال بررسی روی شبکه */}
           {isConfirming && <p style={{ color: '#d97706', margin: '5px 0' }}>⏳ در حال تایید در بلاک‌چین سپولیا...</p>}
 
-          {/* وضعیت موفقیت نهایی */}
           {isConfirmed && <p style={{ color: 'green', fontWeight: 'bold', margin: '5px 0' }}>✓ مینت با موفقیت روی شبکه ثبت شد!</p>}
           
-          {/* نمایش خطا */}
-          {error && <p style={{ color: 'red', margin: '5px 0', fontSize: '12px' }}>خطا: {error.shortMessage || 'تراکنش لغو شد.'}</p>}
+          {error && <p style={{ color: 'red', margin: '5px 0', fontSize: '12px' }}>خطا: {error.message || 'تراکنش لغو شد.'}</p>}
         </div>
       </div>
     </main>
