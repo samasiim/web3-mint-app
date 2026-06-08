@@ -2,9 +2,10 @@
 import { useState } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { getAddress } from 'viem';
 
-// آدرس قرارداد هوشمند واقعی و زنده روی شبکه سپولیا (با حروف کاملاً کوچک)
-const CONTRACT_ADDRESS = '0xf99df193630fbc89F3f3f982ddf6158b93f25b1d';
+// تبدیل خودکار آدرس قرارداد به فرمت استاندارد Checksum برای حل قطعی خطای اعتبارسنجی
+const CONTRACT_ADDRESS = getAddress('0xf99df193630fbc89f3f3f982ddf6158b93f25b1d');
 
 // ساختار دقیق ABI برای معرفی تابع mint
 const CONTRACT_ABI = [
