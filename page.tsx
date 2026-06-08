@@ -1,15 +1,32 @@
 'use client';
 import { useState } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+
+// آدرس قرارداد هوشمند واقعی و زنده روی شبکه سپولیا
+const CONTRACT_ADDRESS = '0xF99df193630fbc89F3f3f982Ddf6158B93f25B1D';
+
+// ساختار دقیق ABI برای تابع mint
+const CONTRACT_ABI = [
+  {
+    name: 'mint',
+    type: 'function',
+    stateMutability: 'nonpayable', // رایگان بدون نیاز به ارسال اتر
+    inputs: [{ name: 'quantity', type: 'uint256' }],
+    outputs: [],
+  },
+];
 
 export default function Home() {
   const [mintAmount, setMintAmount] = useState(1);
   
-  // وضعیت‌های شبیه‌سازی شده برای تست ظاهر برنامه
-  const [isPending, setIsPending] = useState(false);
-  const [isConfirming, setIsConfirming] = useState(false);
-  const [isConfirmed, setIsConfirmed] = useState(false);
-  const [hash, setHash] = useState<string | null>(null);
+  // اتصال به هوک واقعی واگمی برای ارسال تراکنش
+  const { data: hash, writeContract, isPending, error } = useWriteContract();
+
+  // انتظار واقعی برای تایید تراکنش در شبکه سپولیا
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash,
+  });
 
   const incrementAmount = () => {
     if (mintAmount < 10) setMintAmount(mintAmount + 1);
@@ -19,24 +36,14 @@ export default function Home() {
     if (mintAmount > 1) setMintAmount(mintAmount - 1);
   };
 
-  // تابع شبیه‌سازی مراحل تراکنش
-  const handleMintFake = () => {
-    // ۱. ابتدا وضعیت تایید در کیف پول
-    setIsPending(true);
-    setIsConfirmed(false);
-    setHash(null);
-
-    setTimeout(() => {
-      setIsPending(false);
-      setIsConfirming(true);
-      // تولید یک هش تراکنش فرضی برای نمایش لینک اتراسکن
-      setHash('0x4e3a475143a85404bc032c525f6fa034078be1cf3ee43f2ff110d7ef5b839b23');
-    }, 2000); // بعد از ۲ ثانیه فرستاده می‌شود به شبکه
-
-    setTimeout(() => {
-      setIsConfirming(false);
-      setIsConfirmed(true);
-    }, 5000); // بعد از ۵ ثانیه تایید نهایی می‌شود
+  // تابع اصلی ارسال تراکنش واقعی به متامسک
+  const handleMint = () => {
+    writeContract({
+      address: CONTRACT_ADDRESS,
+      abi: CONTRACT_ABI,
+      functionName: 'mint',
+      args: [BigInt(mintAmount)],
+    });
   };
 
   return (
@@ -51,8 +58,8 @@ export default function Home() {
       backgroundColor: '#f5f5f5',
       color: '#333'
     }}>
-      <h1 style={{ margin: 0 }}>برنامه مینت وب ۳</h1>
-      <p style={{ margin: 0, color: '#666' }}>وضعیت دکمه و لینک تراکنش را تست کنید</p>
+      <h1 style={{ margin: 0 }}>برنامه مینت وب ۳ واقعی</h1>
+      <p style={{ margin: 0, color: '#666' }}>کیف پول را روی شبکه Sepolia وصل کرده و مینت کنید</p>
       
       <ConnectButton />
       
@@ -77,7 +84,7 @@ export default function Home() {
         </div>
 
         <button 
-          onClick={handleMintFake}
+          onClick={handleMint}
           disabled={isPending || isConfirming}
           style={{
             width: '100%',
@@ -104,10 +111,10 @@ export default function Home() {
               </a>
             </p>
           )}
-          {isConfirmed && <p style={{ color: 'green', fontWeight: 'bold', margin: '5px 0' }}>✓ مینت با موفقیت انجام شد!</p>}
+          {isConfirmed && <p style={{ color: 'green', fontWeight: 'bold', margin: '5px 0' }}>✓ مینت واقعی با موفقیت انجام شد!</p>}
+          {error && <p style={{ color: 'red', margin: '5px 0', fontSize: '12px' }}>خطا: {error.shortMessage || 'تراکنش لغو شد.'}</p>}
         </div>
       </div>
     </main>
   );
-  
 }
