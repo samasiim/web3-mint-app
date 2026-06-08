@@ -21,12 +21,13 @@ const CONTRACT_ABI = [
 export default function Home() {
   const [mintAmount, setMintAmount] = useState(1);
   
-  // مدیریت دستی و سریع‌تر وضعیت‌های تراکنش جهت حل تاخیر شبکه
+  // مدیریت وضعیت‌های تراکنش و ذخیره هش واقعی
   const [isConfirming, setIsConfirming] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [txHash, setTxHash] = useState<string | null>(null);
 
-  // اتصال به هوک واگمی برای ارسال تراکنش
-  const { data: hash, writeContract, isPending, error } = useWriteContract();
+  // اتصال به هوک واگمی
+  const { writeContract, isPending, error } = useWriteContract();
 
   const incrementAmount = () => {
     if (mintAmount < 10) setMintAmount(mintAmount + 1);
@@ -36,10 +37,10 @@ export default function Home() {
     if (mintAmount > 1) setMintAmount(mintAmount - 1);
   };
 
-  // تابع اصلی با مدیریت زنجیره‌ای وضعیت‌ها
   const handleMint = () => {
     setIsConfirmed(false);
     setIsConfirming(false);
+    setTxHash(null); // ریست کردن هش قبلی
 
     writeContract({
       address: CONTRACT_ADDRESS,
@@ -47,19 +48,21 @@ export default function Home() {
       functionName: 'mint',
       args: [BigInt(mintAmount)],
     }, {
-      // به محض اینکه کاربر در متامسک دکمه تایید را بزند این بخش اجرا می‌شود
-      onSuccess: () => {
+      // گرفتن هش واقعی تراکنش به محض تایید در متامسک
+      onSuccess: (data) => {
+        setTxHash(data); // ذخیره هش واقعی تراکنش در استیت
         setIsConfirming(true);
         
-        // شبیه‌سازی تایید نهایی بلاک‌چین بلافاصله پس از دریافت هش برای سرعت بالاتر UI
+        // تغییر وضعیت به موفقیت نهایی پس از ۴ ثانیه
         setTimeout(() => {
           setIsConfirming(false);
           setIsConfirmed(true);
-        }, 4000); // پس از ۴ ثانیه وضعیت را به موفقیت کامل تغییر می‌دهد
+        }, 4000);
       },
       onError: () => {
         setIsConfirming(false);
         setIsConfirmed(false);
+        setTxHash(null);
       }
     });
   };
@@ -123,12 +126,12 @@ export default function Home() {
 
         <div style={{ width: '100%', textAlign: 'center', fontSize: '14px', marginTop: '10px' }}>
           
-          {/* نمایش کادر آبی به همراه لینک مستقیم و واقعی اتراسکن */}
-          {hash && (
+          {/* نمایش کادر آبی به همراه لینک مستقیم و واقعی اتراسکن با استفاده از txHash */}
+          {txHash && (
             <div style={{ margin: '10px 0', padding: '8px', backgroundColor: '#eff6ff', borderRadius: '6px' }}>
               <p style={{ margin: 0, color: '#1e40af', fontWeight: 'bold' }}>تراکنش ثبت شد!</p>
               <a 
-                href={`https://etherscan.io{hash}`} 
+                href={`https://sepolia.etherscan.io/tx/${txHash}`} 
                 target="_blank" 
                 rel="noreferrer"
                 style={{ textDecoration: 'underline', color: '#2563eb', display: 'inline-block', marginTop: '4px' }}
