@@ -4,7 +4,8 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 
 // آدرس قرارداد هوشمند واقعی و زنده روی شبکه سپولیا
-const CONTRACT_ADDRESS = '0xF99df193630fbc89F3f3f982Ddf6158B93f25B1D';
+// آدرس قرارداد هوشمند با حروف کاملاً کوچک
+const CONTRACT_ADDRESS = '0xf99df193630fbc89f3f3f982ddf6158b93f25b1d';
 
 // ساختار دقیق ABI برای تابع mint
 const CONTRACT_ABI = [
