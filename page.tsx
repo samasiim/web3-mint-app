@@ -4,10 +4,8 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useWriteContract } from 'wagmi';
 import { getAddress } from 'viem';
 
-// آدرس قرارداد هوشمند واقعی و زنده روی شبکه سپولیا
 const CONTRACT_ADDRESS = getAddress('0xf99df193630fbc89F3f3f982ddf6158b93f25b1d');
 
-// ساختار دقیق ABI برای معرفی تابع mint
 const CONTRACT_ABI = [
   {
     name: 'mint',
@@ -21,12 +19,10 @@ const CONTRACT_ABI = [
 export default function Home() {
   const [mintAmount, setMintAmount] = useState(1);
   
-  // مدیریت وضعیت‌های تراکنش و ذخیره هش واقعی
   const [isConfirming, setIsConfirming] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [txHash, setTxHash] = useState<string | null>(null);
 
-  // اتصال به هوک واگمی
   const { writeContract, isPending, error } = useWriteContract();
 
   const incrementAmount = () => {
@@ -73,25 +69,32 @@ export default function Home() {
       justifyContent: 'center', 
       height: '100vh',
       gap: '30px',
-      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontFamily: '"Plus Jakarta Sans", "Inter", sans-serif',
+      letterSpacing: '-0.02em',
       backgroundColor: '#0a0b0d',
       backgroundImage: 'radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0a0b0d 100%)',
       color: '#ffffff',
       padding: '20px'
     }}>
+      {/* لود کردن لایو فونت‌های باکیفیت گوگل از وب */}
+      <link rel="preconnect" href="https://googleapis.com" />
+      <link rel="preconnect" href="https://gstatic.com" crossOrigin="anonymous" />
+      <link href="https://googleapis.com/css2?family=Inter:wght@400;600;800&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet" />
+
       <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <h1 style={{ 
           margin: 0, 
-          fontSize: '32px', 
+          fontSize: '36px', 
           fontWeight: '800',
+          letterSpacing: '-0.03em',
           background: 'linear-gradient(to right, #38bdf8, #818cf8)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent'
         }}>
-          برنامه مینت وب ۳ واقعی
+          Live Web3 Mint Portal
         </h1>
-        <p style={{ margin: 0, color: '#94a3b8', fontSize: '15px' }}>
-          کیف پول را روی شبکه Sepolia وصل کرده و مینت کنید
+        <p style={{ margin: 0, color: '#94a3b8', fontSize: '15px', fontWeight: '500' }}>
+          Connect your wallet to Sepolia network and mint your NFT
         </p>
       </div>
       
@@ -112,11 +115,11 @@ export default function Home() {
         gap: '24px',
         width: '340px'
       }}>
-        <h3 style={{ margin: 0, color: '#f1f5f9', fontSize: '16px', fontWeight: '500' }}>
-          تعداد برای مینت:
+        <h3 style={{ margin: 0, color: '#94a3b8', fontSize: '14px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          Amount to Mint
         </h3>
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
           <button 
             onClick={decrementAmount} 
             style={{ 
@@ -130,11 +133,12 @@ export default function Home() {
               color: '#fff',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              fontWeight: '600'
             }}
           >-</button>
           
-          <span style={{ fontSize: '28px', fontWeight: '700', color: '#38bdf8', minWidth: '30px', textAlign: 'center' }}>
+          <span style={{ fontSize: '32px', fontWeight: '800', color: '#38bdf8', minWidth: '35px', textAlign: 'center', fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
             {mintAmount}
           </span>
           
@@ -151,7 +155,8 @@ export default function Home() {
               color: '#fff',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              fontWeight: '600'
             }}
           >+</button>
         </div>
@@ -168,46 +173,46 @@ export default function Home() {
             border: 'none',
             borderRadius: '14px',
             fontSize: '16px',
-            fontWeight: '600',
+            fontWeight: '700',
+            fontFamily: '"Plus Jakarta Sans", sans-serif',
             cursor: (isPending || isConfirming) ? 'not-allowed' : 'pointer',
             boxShadow: (isPending || isConfirming) ? 'none' : '0 4px 20px rgba(124, 58, 237, 0.3)',
           }}
         >
-          {isPending && 'در حال تایید در کیف پول...'}
-          {isConfirming && 'در حال ثبت در بلاک‌چین...'}
+          {isPending && 'Confirming in wallet...'}
+          {isConfirming && 'Broadcasting to chain...'}
           {!isPending && !isConfirming && 'Mint NFT'}
         </button>
 
         <div style={{ width: '100%', textAlign: 'center', fontSize: '14px' }}>
           
-          {/* اتصال رشته به روش سنتی جاوااسکریپت برای امنیت ۱۰۰ درصدی لینک */}
           {txHash && (
             <div style={{ 
               margin: '10px 0 0 0', 
               padding: '12px', 
-              backgroundColor: 'rgba(56, 189, 248, 0.1)', 
-              border: '1px solid rgba(56, 189, 248, 0.2)',
+              backgroundColor: 'rgba(56, 189, 248, 0.08)', 
+              border: '1px solid rgba(56, 189, 248, 0.15)',
               borderRadius: '12px' 
             }}>
-              <p style={{ margin: 0, color: '#38bdf8', fontWeight: '600' }}>تراکنش ثبت شد!</p>
+              <p style={{ margin: 0, color: '#38bdf8', fontWeight: '700' }}>Transaction Broadcasted!</p>
               <a 
-                href={'https://sepolia.etherscan.io/tx/' + txHash} 
+                href={'https://etherscan.io' + txHash} 
                 target="_blank" 
                 rel="noreferrer"
-                style={{ textDecoration: 'underline', color: '#60a5fa', display: 'inline-block', marginTop: '6px' }}
+                style={{ textDecoration: 'none', color: '#60a5fa', fontWeight: '600', display: 'inline-block', marginTop: '6px' }}
               >
-                مشاهده در Etherscan ↗
+                View on Etherscan ↗
               </a>
             </div>
           )}
 
-          {isConfirming && <p style={{ color: '#fbbf24', margin: '12px 0 0 0' }}>⏳ در حال تایید در بلاک‌چین سپولیا...</p>}
+          {isConfirming && <p style={{ color: '#fbbf24', fontWeight: '600', margin: '12px 0 0 0' }}>⏳ Confirming on Sepolia network...</p>}
 
-          {isConfirmed && <p style={{ color: '#34d399', fontWeight: '700', margin: '12px 0 0 0' }}>✓ مینت با موفقیت روی شبکه ثبت شد!</p>}
+          {isConfirmed && <p style={{ color: '#34d399', fontWeight: '800', margin: '12px 0 0 0' }}>✓ Mint successfully confirmed!</p>}
           
           {error && (
-            <p style={{ color: '#f87171', margin: '12px 0 0 0', fontSize: '13px', backgroundColor: 'rgba(248, 113, 113, 0.1)', padding: '8px', borderRadius: '8px' }}>
-              خطا: {error.message || 'تراکنش لغو شد.'}
+            <p style={{ color: '#f87171', margin: '12px 0 0 0', fontSize: '13px', backgroundColor: 'rgba(248, 113, 113, 0.08)', padding: '10px', borderRadius: '10px', fontWeight: '500' }}>
+              Error: {error.message || 'Transaction rejected.'}
             </p>
           )}
         </div>
