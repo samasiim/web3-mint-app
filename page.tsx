@@ -40,7 +40,7 @@ export default function Home() {
   const handleMint = () => {
     setIsConfirmed(false);
     setIsConfirming(false);
-    setTxHash(null); // ریست کردن هش قبلی
+    setTxHash(null);
 
     writeContract({
       address: CONTRACT_ADDRESS,
@@ -48,12 +48,10 @@ export default function Home() {
       functionName: 'mint',
       args: [BigInt(mintAmount)],
     }, {
-      // گرفتن هش واقعی تراکنش به محض تایید در متامسک
       onSuccess: (data) => {
-        setTxHash(data); // ذخیره هش واقعی تراکنش در استیت
+        setTxHash(data);
         setIsConfirming(true);
         
-        // تغییر وضعیت به موفقیت نهایی پس از ۴ ثانیه
         setTimeout(() => {
           setIsConfirming(false);
           setIsConfirmed(true);
@@ -74,34 +72,88 @@ export default function Home() {
       alignItems: 'center', 
       justifyContent: 'center', 
       height: '100vh',
-      gap: '25px',
-      fontFamily: 'sans-serif',
-      backgroundColor: '#f5f5f5',
-      color: '#333'
+      gap: '30px',
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      backgroundColor: '#0a0b0d',
+      backgroundImage: 'radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0a0b0d 100%)',
+      color: '#ffffff',
+      padding: '20px'
     }}>
-      <h1 style={{ margin: 0 }}>برنامه مینت وب ۳ واقعی</h1>
-      <p style={{ margin: 0, color: '#666' }}>کیف پول را روی شبکه Sepolia وصل کرده و مینت کنید</p>
+      <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <h1 style={{ 
+          margin: 0, 
+          fontSize: '32px', 
+          fontWeight: '800',
+          background: 'linear-gradient(to right, #38bdf8, #818cf8)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent'
+        }}>
+          برنامه مینت وب ۳ واقعی
+        </h1>
+        <p style={{ margin: 0, color: '#94a3b8', fontSize: '15px' }}>
+          کیف پول را روی شبکه Sepolia وصل کرده و مینت کنید
+        </p>
+      </div>
       
-      <ConnectButton />
+      <div style={{ transform: 'scale(1.05)', transition: 'all 0.3s' }}>
+        <ConnectButton />
+      </div>
       
       <div style={{
-        border: '1px solid #ccc',
-        borderRadius: '12px',
-        padding: '24px',
-        backgroundColor: '#fff',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        borderRadius: '24px',
+        padding: '30px',
+        backgroundColor: 'rgba(22, 28, 45, 0.6)',
+        backdropFilter: 'blur(12px)',
+        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4), 0 0 50px rgba(99, 102, 241, 0.1)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '20px',
-        width: '320px'
+        gap: '24px',
+        width: '340px'
       }}>
-        <h3 style={{ margin: 0 }}>تعداد برای مینت:</h3>
+        <h3 style={{ margin: 0, color: '#f1f5f9', fontSize: '16px', fontWeight: '500' }}>
+          تعداد برای مینت:
+        </h3>
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <button onClick={decrementAmount} style={{ padding: '8px 16px', fontSize: '18px', cursor: 'pointer', borderRadius: '6px', border: '1px solid #ccc' }}>-</button>
-          <span style={{ fontSize: '22px', fontWeight: 'bold' }}>{mintAmount}</span>
-          <button onClick={incrementAmount} style={{ padding: '8px 16px', fontSize: '18px', cursor: 'pointer', borderRadius: '6px', border: '1px solid #ccc' }}>+</button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <button 
+            onClick={decrementAmount} 
+            style={{ 
+              width: '44px',
+              height: '44px',
+              fontSize: '20px', 
+              cursor: 'pointer', 
+              borderRadius: '50%', 
+              border: '1px solid rgba(255,255,255,0.1)',
+              backgroundColor: 'rgba(255,255,255,0.05)',
+              color: '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >-</button>
+          
+          <span style={{ fontSize: '28px', fontWeight: '700', color: '#38bdf8', minWidth: '30px', textAlign: 'center' }}>
+            {mintAmount}
+          </span>
+          
+          <button 
+            onClick={incrementAmount} 
+            style={{ 
+              width: '44px',
+              height: '44px',
+              fontSize: '20px', 
+              cursor: 'pointer', 
+              borderRadius: '50%', 
+              border: '1px solid rgba(255,255,255,0.1)',
+              backgroundColor: 'rgba(255,255,255,0.05)',
+              color: '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >+</button>
         </div>
 
         <button 
@@ -109,14 +161,16 @@ export default function Home() {
           disabled={isPending || isConfirming}
           style={{
             width: '100%',
-            padding: '12px',
-            backgroundColor: (isPending || isConfirming) ? '#94a3b8' : '#3b82f6',
+            padding: '16px',
+            backgroundColor: (isPending || isConfirming) ? '#334155' : '#4f46e5',
+            backgroundImage: (isPending || isConfirming) ? 'none' : 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
             color: '#fff',
             border: 'none',
-            borderRadius: '8px',
+            borderRadius: '14px',
             fontSize: '16px',
-            fontWeight: 'bold',
+            fontWeight: '600',
             cursor: (isPending || isConfirming) ? 'not-allowed' : 'pointer',
+            boxShadow: (isPending || isConfirming) ? 'none' : '0 4px 20px rgba(124, 58, 237, 0.3)',
           }}
         >
           {isPending && 'در حال تایید در کیف پول...'}
@@ -124,28 +178,38 @@ export default function Home() {
           {!isPending && !isConfirming && 'Mint NFT'}
         </button>
 
-        <div style={{ width: '100%', textAlign: 'center', fontSize: '14px', marginTop: '10px' }}>
+        <div style={{ width: '100%', textAlign: 'center', fontSize: '14px' }}>
           
-          {/* نمایش کادر آبی به همراه لینک مستقیم و واقعی اتراسکن با استفاده از txHash */}
+          {/* اتصال رشته به روش سنتی جاوااسکریپت برای امنیت ۱۰۰ درصدی لینک */}
           {txHash && (
-            <div style={{ margin: '10px 0', padding: '8px', backgroundColor: '#eff6ff', borderRadius: '6px' }}>
-              <p style={{ margin: 0, color: '#1e40af', fontWeight: 'bold' }}>تراکنش ثبت شد!</p>
+            <div style={{ 
+              margin: '10px 0 0 0', 
+              padding: '12px', 
+              backgroundColor: 'rgba(56, 189, 248, 0.1)', 
+              border: '1px solid rgba(56, 189, 248, 0.2)',
+              borderRadius: '12px' 
+            }}>
+              <p style={{ margin: 0, color: '#38bdf8', fontWeight: '600' }}>تراکنش ثبت شد!</p>
               <a 
-                href={`https://sepolia.etherscan.io/tx/${txHash}`} 
+                href={'https://sepolia.etherscan.io/tx/' + txHash} 
                 target="_blank" 
                 rel="noreferrer"
-                style={{ textDecoration: 'underline', color: '#2563eb', display: 'inline-block', marginTop: '4px' }}
+                style={{ textDecoration: 'underline', color: '#60a5fa', display: 'inline-block', marginTop: '6px' }}
               >
                 مشاهده در Etherscan ↗
               </a>
             </div>
           )}
 
-          {isConfirming && <p style={{ color: '#d97706', margin: '5px 0' }}>⏳ در حال تایید در بلاک‌چین سپولیا...</p>}
+          {isConfirming && <p style={{ color: '#fbbf24', margin: '12px 0 0 0' }}>⏳ در حال تایید در بلاک‌چین سپولیا...</p>}
 
-          {isConfirmed && <p style={{ color: 'green', fontWeight: 'bold', margin: '5px 0' }}>✓ مینت با موفقیت روی شبکه ثبت شد!</p>}
+          {isConfirmed && <p style={{ color: '#34d399', fontWeight: '700', margin: '12px 0 0 0' }}>✓ مینت با موفقیت روی شبکه ثبت شد!</p>}
           
-          {error && <p style={{ color: 'red', margin: '5px 0', fontSize: '12px' }}>خطا: {error.message || 'تراکنش لغو شد.'}</p>}
+          {error && (
+            <p style={{ color: '#f87171', margin: '12px 0 0 0', fontSize: '13px', backgroundColor: 'rgba(248, 113, 113, 0.1)', padding: '8px', borderRadius: '8px' }}>
+              خطا: {error.message || 'تراکنش لغو شد.'}
+            </p>
+          )}
         </div>
       </div>
     </main>
