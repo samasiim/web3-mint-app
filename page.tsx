@@ -76,7 +76,6 @@ export default function Home() {
       color: '#ffffff',
       padding: '20px'
     }}>
-      {/* لود کردن لایو فونت‌های باکیفیت گوگل از وب */}
       <link rel="preconnect" href="https://googleapis.com" />
       <link rel="preconnect" href="https://gstatic.com" crossOrigin="anonymous" />
       <link href="https://googleapis.com/css2?family=Inter:wght@400;600;800&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet" />
@@ -115,6 +114,31 @@ export default function Home() {
         gap: '24px',
         width: '340px'
       }}>
+        
+        {/* تصویر متحرک NFT Artwork اضافه شده */}
+        <div style={{
+          width: '100%',
+          height: '200px',
+          borderRadius: '16px',
+          overflow: 'hidden',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.3), 0 0 20px rgba(56, 189, 248, 0.15)',
+          border: '1px solid rgba(255,255,255,0.05)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#111827'
+        }}>
+          <img 
+            src="https://dribbble.com" 
+            alt="NFT Artwork Preview"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover'
+            }}
+          />
+        </div>
+
         <h3 style={{ margin: 0, color: '#94a3b8', fontSize: '14px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           Amount to Mint
         </h3>
