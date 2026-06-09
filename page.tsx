@@ -115,7 +115,7 @@ export default function Home() {
         width: '340px'
       }}>
         
-        {/* تصویر متحرک NFT Artwork اضافه شده */}
+        {/* تصویر مستقیم داخلی (بلاک‌چینی و غیر قابل بلاک شدن توسط مرورگر) */}
         <div style={{
           width: '100%',
           height: '200px',
@@ -128,15 +128,19 @@ export default function Home() {
           justifyContent: 'center',
           backgroundColor: '#111827'
         }}>
-          <img 
-            src="https://unsplash.com" 
-            alt="NFT Artwork Preview"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover'
-            }}
-          />
+          <svg width="100%" height="100%" viewBox="0 0 400 400" fill="none" xmlns="http://w3.org" style={{ transform: 'scale(1.2)' }}>
+            <defs>
+              <linearGradient id="neonGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#38bdf8" />
+                <stop offset="50%" stopColor="#818cf8" />
+                <stop offset="100%" stopColor="#c084fc" />
+              </linearGradient>
+            </defs>
+            <rect width="400" height="400" fill="#0f172a"/>
+            <circle cx="200" cy="200" r="100" stroke="url(#neonGlow)" strokeWidth="6" fill="none" opacity="0.3"/>
+            <path d="M120 200 L200 120 L280 200 L200 280 Z" stroke="url(#neonGlow)" strokeWidth="4" fill="none"/>
+            <circle cx="200" cy="200" r="40" fill="url(#neonGlow)"/>
+          </svg>
         </div>
 
         <h3 style={{ margin: 0, color: '#94a3b8', fontSize: '14px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
