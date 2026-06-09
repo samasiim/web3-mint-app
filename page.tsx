@@ -129,7 +129,7 @@ export default function Home() {
           backgroundColor: '#111827'
         }}>
           <img 
-            src="https://dribbble.com" 
+            src="https://unsplash.com" 
             alt="NFT Artwork Preview"
             style={{
               width: '100%',
